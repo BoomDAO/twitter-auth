@@ -4,6 +4,10 @@ import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
 
+config();
+
+const port = process.env.PORT || 3000;
+
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
@@ -15,8 +19,8 @@ passport.deserializeUser(function (obj: Express.User, done) {
 passport.use(
   new Strategy( 
     {
-      // clientID: process.env['TWITTER_CLIENT_ID'] as string,
-      // clientSecret: process.env['TWITTER_CLIENT_SECRET'] as string,
+      // clientID: process.env.TWITTER_CLIENT_ID as string,
+      // clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
       clientID: 'TlZIVFRVM0d3YS11MC10MndER3c6MTpjaQ',
       clientSecret: '0_ELbxdrU5MM4SyMmJtexx26QeS2_rAcEga2MuBQl-tGMPQCbu',
       clientType: 'confidential',
@@ -58,4 +62,4 @@ app.get(
 );
 
 app.use(express.static('/dist'));
-app.listen(3000, () => {console.log("listening")});
+app.listen(port, () => {console.log("listening on " + {port})});
