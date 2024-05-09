@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
 import { Strategy } from '@superfaceai/passport-twitter-oauth2';
 import express from 'express';
 import session from 'express-session';
@@ -15,12 +15,14 @@ passport.deserializeUser(function (obj: Express.User, done) {
 passport.use(
   new Strategy( 
     {
-      clientID: process.env['TWITTER_CLIENT_ID'] as string,
-      clientSecret: process.env['TWITTER_CLIENT_SECRET'] as string,
+      // clientID: process.env['TWITTER_CLIENT_ID'] as string,
+      // clientSecret: process.env['TWITTER_CLIENT_SECRET'] as string,
+      clientID: 'TlZIVFRVM0d3YS11MC10MndER3c6MTpjaQ',
+      clientSecret: '0_ELbxdrU5MM4SyMmJtexx26QeS2_rAcEga2MuBQl-tGMPQCbu',
       clientType: 'confidential',
       callbackURL: `http://localhost:3000/auth/twitter/callback`,
     },
-    (accessToken : string, refreshToken : string, profile, done) => {
+    (accessToken : string, refreshToken : string, profile : any, done : any) => {
       console.log('Success!', { accessToken, refreshToken });
       console.log(profile);
       console.log(done);
