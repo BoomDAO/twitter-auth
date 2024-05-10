@@ -19,12 +19,10 @@ passport.deserializeUser(function (obj: Express.User, done) {
 passport.use(
   new Strategy( 
     {
-      // clientID: process.env.TWITTER_CLIENT_ID as string,
-      // clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
-      clientID: 'TlZIVFRVM0d3YS11MC10MndER3c6MTpjaQ',
-      clientSecret: '0_ELbxdrU5MM4SyMmJtexx26QeS2_rAcEga2MuBQl-tGMPQCbu',
+      clientID: process.env.TWITTER_CLIENT_ID as string,
+      clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
       clientType: 'confidential',
-      callbackURL: `http://localhost:3000/auth/twitter/callback`,
+      callbackURL: `https://boom-dao-twitter-auth.up.railway.app/authorized`,
     },
     (accessToken : string, refreshToken : string, profile : any, done : any) => {
       console.log('Success!', { accessToken, refreshToken });
@@ -50,13 +48,13 @@ app.get(
 );
 
 app.get(
-  '/auth/twitter/callback',
+  '/authorized',
   passport.authenticate('twitter'),
   function (req, res) {
     const userData = JSON.stringify(req.user, undefined, 2);
     res.end(
       // `<h1>Authentication succeeded</h1> User data: <pre>${userData}</pre>`
-      `<h1>Authentication succeeded</h1> You can now head back and complete BOOM DAO Quests.</pre>`
+      `<h1>You have successfully linked your Twitter account to BOOM Gaming Guild.</h1> You can now head back and complete BGG Quests.</pre>`
     );
   }
 );
