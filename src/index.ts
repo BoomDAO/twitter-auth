@@ -15,24 +15,6 @@ passport.deserializeUser(function (obj: Express.User, done) {
   done(null, obj);
 });
 
-// Use the Twitter OAuth2 strategy within Passport
-passport.use(
-  new Strategy( 
-    {
-      clientID: process.env.TWITTER_CLIENT_ID as string,
-      clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
-      clientType: 'confidential',
-      callbackURL: `https://boom-dao-twitter-auth.up.railway.app/authorized`,
-    },
-    (accessToken : string, refreshToken : string, profile : any, done : any) => {
-      console.log('Success!', { accessToken, refreshToken });
-      console.log(profile);
-      console.log(done);
-      return done(null, profile);
-    }
-  )
-);
-
 const app = express();
 
 app.use(passport.initialize());
@@ -40,10 +22,27 @@ app.use(
   session({ secret: 'keyboard cat', resave: false, saveUninitialized: true })
 );
 
+app.get('/', async function (req, res) {
+  passport.use(
+    new Strategy( 
+      {
+        clientID: process.env.TWITTER_CLIENT_ID as string,
+        clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
+        clientType: 'confidential',
+        callbackURL: `https://boom-dao-twitter-auth.up.railway.app/authorized?userId=${req.query.userId}`,
+      },
+      (accessToken : string, refreshToken : string, profile : any, done : any) => {
+        return done(null, profile);
+      }
+    )
+  );
+  res.redirect("https://boom-dao-twitter-auth.up.railway.app/x/authentication");
+});
+
 app.get(
-  '/',
+  '/x/authentication',
   passport.authenticate('twitter', {
-    scope: ['tweet.read', 'users.read', 'offline.access'],
+    scope: ['users.read', 'offline.access'],
   })
 );
 
@@ -52,8 +51,9 @@ app.get(
   passport.authenticate('twitter'),
   function (req, res) {
     const userData = JSON.stringify(req.user, undefined, 2);
+    console.log(req.query.userId);
+    console.log(userData);
     res.end(
-      // `<h1>Authentication succeeded</h1> User data: <pre>${userData}</pre>`
       `<h1>You have successfully linked your Twitter account to BOOM Gaming Guild.</h1> You can now head back and complete BGG Quests.</pre>`
     );
   }
