@@ -54,13 +54,12 @@ app.get(
     const userData = JSON.stringify(req.user, undefined, 2);
     const data = JSON.parse(userData);
     let uid = req.query.userId;
-    console.log(req.query.userId);
-    console.log(data.id);
     const response = await axios.post(process.env.UPDATE_URL? process.env.UPDATE_URL : "", {}, {
       headers: {
         'key' : process.env.KEY,
         'tid' : data.id,
-        'uid' : String(uid)
+        'uid' : String(uid),
+        'tusername' : String(data.username)
       }
     })
     if(response.status == 200) {
