@@ -138,7 +138,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
     let tweet_data = await getUserLatestTweetData(String(tuserid));
     let followers_count = user_data.data[0].public_metrics.followers_count;
     // Handle Tweet Checks
-    if (followers_count >= 50 && String(tweet_data).includes("#BOOMDAO")) {
+    if (followers_count >= 10 && String(tweet_data).includes("#BOOMDAO")) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'key': process.env.KEY,
