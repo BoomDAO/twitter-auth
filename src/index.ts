@@ -4,10 +4,51 @@ import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
 import axios from 'axios';
+import needle from 'needle';
 
 config();
 
 const port = process.env.PORT || 3000;
+
+async function getUserTwitterData(username: string) {
+  const token = process.env.BEARER_TOKEN;
+  const endpointURL = "https://api.twitter.com/2/users/by?usernames="
+  const params = {
+    usernames: username,
+    "user.fields": "created_at,name,connection_status,public_metrics"
+  }
+  const res = await needle('get', endpointURL, params, {
+    headers: {
+      "User-Agent": "v2UserLookupJS",
+      "authorization": `Bearer ${token}`
+    }
+  })
+  if (res.body) {
+    // console.dir(res, {
+    //   depth: null
+    // });
+    return res.body;
+  } else {
+    throw new Error('Unsuccessful request')
+  }
+}
+
+const getUserLatestTweetData = async (userId: string) => {
+  const url = `https://api.twitter.com/2/users/${userId}/tweets`;
+  const token = process.env.BEARER_TOKEN;
+  let params = {
+    "tweet.fields": "created_at",
+    "expansions": "author_id"
+  }
+  const options = {
+    headers: {
+      "User-Agent": "v2UserTweetsJS",
+      "authorization": `Bearer ${token}`
+    }
+  }
+  const resp = await needle('get', url, params, options);
+  return resp.body.data[0].text;
+}
 
 passport.serializeUser(function (user, done) {
   done(null, user);
@@ -54,25 +95,77 @@ app.get(
     const userData = JSON.stringify(req.user, undefined, 2);
     const data = JSON.parse(userData);
     let uid = req.query.userId;
-    const response = await axios.post(process.env.UPDATE_URL? process.env.UPDATE_URL : "", {}, {
+    const response = await axios.post(process.env.UPDATE_URL ? process.env.UPDATE_URL : "", {}, {
       headers: {
-        'key' : process.env.KEY,
-        'tid' : data.id,
-        'uid' : String(uid),
-        'tusername' : String(data.username)
+        'key': process.env.KEY,
+        'tid': data.id,
+        'uid': String(uid),
+        'tusername': String(data.username)
       }
     })
-    if(response.status == 200) {
+    if (response.status == 200) {
       res.end(
         `<h1>You have successfully linked your Twitter account to BOOM Gaming Guild. ${response.data}</h1> You can now head back and complete BGG Quests.</pre>`
       );
     } else {
       res.end(
-        `${response.data}`
+        `<h1>${response.data}</h1>`
       );
     }
   }
 );
+
+app.post('/check-twitter-quest-status', async function (req, res) {
+  let auth = req.headers['Authorization'];
+  if (auth != process.env.key) {
+    res.status(404).end();
+  }
+  let tusername = req.headers['tusername'];
+  let tuserid = req.headers['tuserid'];
+  let principal = req.headers['principalid'];
+  let actionId = req.headers['actionid'];
+
+  try {
+    let user_data = await getUserTwitterData(String(tusername));
+    let tweet_data = await getUserLatestTweetData(String(tuserid));
+    let followers_count = user_data.data[0].public_metrics.followers_count;
+    // Handle Tweet Checks
+    if (followers_count >= 50 && String(tweet_data).includes("#BOOMDAO")) {
+      const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
+        headers: {
+          'key': process.env.KEY,
+          'aid': actionId,
+          'uid': principal,
+        }
+      })
+      if (response.status == 200) {
+        res.send({ msg: 'twitter post verified and rewards processed.' })
+        res.status(200).end();
+      } else {
+        res.send({ msg : 'some error occured in call processAction, contact dev team' });
+        res.status(401).end();
+      }
+    } else {
+      const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
+        headers: {
+          'key': process.env.KEY,
+          'aid': "remove_entity_" + actionId,
+          'uid': principal,
+        }
+      })
+      if (response.status == 200) {
+        res.send({ msg: 'we could not verify your account, as it does not fullfil criteria of this twitter quest.' })
+        res.status(202).end();
+      } else {
+        res.send({ msg : 'we could not verify your account, as it does not fullfil criteria of this twitter quest.Some error occured in call processAction, contact dev team' });
+        res.status(402).end();
+      }
+    }
+  } catch (e) {
+    res.send({ msg: e });
+    res.status(404).end();
+  }
+})
 
 app.use(express.static('/dist'));
 app.listen(port, () => { console.log("listening on " + { port }) });
