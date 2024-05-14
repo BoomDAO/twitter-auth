@@ -147,10 +147,10 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         }
       })
       if (response.status == 200) {
-        res.send({ msg: 'twitter post verified and rewards processed.' })
+        res.status(200).send({ msg: 'twitter post verified and rewards processed.' })
         res.status(200).end();
       } else {
-        res.send({ msg: 'some error occured in call processAction, contact dev team' });
+        res.status(401).send({ msg: 'some error occured in call processAction, contact dev team' });
         res.status(401).end();
       }
     } else {
@@ -162,10 +162,10 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         }
       })
       if (response.status == 200) {
-        res.send({ msg: 'we could not verify your account, as it does not fullfil criteria of this twitter quest.' })
+        res.status(202).send({ msg: 'we could not verify your account, as it does not fullfil criteria of this twitter quest.' })
         res.status(202).end();
       } else {
-        res.send({ msg: 'we could not verify your account, as it does not fullfil criteria of this twitter quest.Some error occured in call processAction, contact dev team' });
+        res.status(402).send({ msg: 'we could not verify your account, as it does not fullfil criteria of this twitter quest.Some error occured in call processAction, contact dev team' });
         res.status(402).end();
       }
     }
