@@ -5,8 +5,15 @@ import session from 'express-session';
 import passport from 'passport';
 import axios from 'axios';
 import needle from 'needle';
+import cors from 'cors';
 
 config();
+
+const corsOptions = {
+  origin: '*',
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+}
 
 const port = process.env.PORT || 3000;
 
@@ -59,6 +66,7 @@ passport.deserializeUser(function (obj: Express.User, done) {
 
 const app = express();
 
+app.use(cors(corsOptions))
 app.use(passport.initialize());
 app.use(
   session({ secret: 'keyboard cat', resave: false, saveUninitialized: true })
@@ -142,7 +150,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         res.send({ msg: 'twitter post verified and rewards processed.' })
         res.status(200).end();
       } else {
-        res.send({ msg : 'some error occured in call processAction, contact dev team' });
+        res.send({ msg: 'some error occured in call processAction, contact dev team' });
         res.status(401).end();
       }
     } else {
@@ -157,7 +165,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         res.send({ msg: 'we could not verify your account, as it does not fullfil criteria of this twitter quest.' })
         res.status(202).end();
       } else {
-        res.send({ msg : 'we could not verify your account, as it does not fullfil criteria of this twitter quest.Some error occured in call processAction, contact dev team' });
+        res.send({ msg: 'we could not verify your account, as it does not fullfil criteria of this twitter quest.Some error occured in call processAction, contact dev team' });
         res.status(402).end();
       }
     }
