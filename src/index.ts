@@ -113,7 +113,7 @@ app.get(
     })
     if (response.status == 200) {
       res.end(
-        `<h2>You have successfully linked your Twitter account to BOOM Gaming Guild account. Click <a href="https://awcae-maaaa-aaaam-abmyq-cai.icp0.io/">BOOM Gaming Guild</a> to get redirected to BGG website and complete your Twitter Quests now.</h2>`
+        `<h1>You have successfully linked your Twitter account to BOOM Gaming Guild account. <br></br>Click <a href="https://n7z64-2yaaa-aaaam-abnsa-cai.icp0.io/">BOOM Gaming Guild</a> to get redirected to BGG website and complete your Twitter Quests now.</h1>`
       );
     } else {
       res.end(
