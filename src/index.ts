@@ -195,5 +195,27 @@ app.post('/grant-twitter-quest-entity', async function (req, res) {
   }
 })
 
+app.post('/set-user-discord-details', async function (req, res) {
+  let auth = req.headers['Authorization'];
+  if (auth != process.env.key) {
+    res.status(404).end();
+  }
+  let principal = req.headers['uid'];
+  let name = req.headers['tusername'];
+  try {
+    const response = await axios.post(process.env.DISCORD_UPDATE_URL ? process.env.DISCORD_UPDATE_URL : "", {}, {
+      headers: {
+        'key': process.env.KEY,
+        'uid': principal,
+        'tusername': name
+      }
+    })
+    res.end();
+  } catch (e) {
+    res.send({ msg: e });
+    res.status(404).end();
+  }
+})
+
 app.use(express.static('/dist'));
 app.listen(port, () => { console.log("listening on " + { port }) });
