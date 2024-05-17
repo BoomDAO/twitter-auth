@@ -230,9 +230,9 @@ client.once('ready', () => {
 });
 client.on('messageCreate', async message => {
     if (message.content.includes('BOOM DAO') && message.content.length >= 10) {
-        if (!message.member?.permissions.has(permission)) {
-            return message.reply('no permission to manage roles.');
-        }
+        // if (!message.member?.permissions.has(permission)) {
+        //     return message.reply('no permission to manage roles.');
+        // }
         let sender_name = message.author.username;
         if(message.author.bot) {
           return message.reply('bot accounts not allowed to post here');
