@@ -116,7 +116,8 @@ app.get(
     })
     if (response.status == 200) {
       res.end(
-        `<h1>You have successfully linked your Twitter account to BOOM Gaming Guild account. <br></br>Click <a href="https://n7z64-2yaaa-aaaam-abnsa-cai.icp0.io/">BOOM Gaming Guild</a> to get redirected to BGG website and complete your Twitter Quests now.</h1>`
+        `<div style="text-align: center;"><p style="font-family: monospace; text-align: center; margin-top: 120px; font-size: 35px; font-weight: 900;">Your Twitter account linked to BOOM Gaming Guild successfully<p>
+        <p style="font-size: 20px;font-family: monospace;">Please Click on <a href="https://n7z64-2yaaa-aaaam-abnsa-cai.icp0.io/">Boom Gaming Guild</a> to redirect and complete Quest.</p></div>`
       );
     } else {
       res.end(
@@ -138,10 +139,14 @@ app.post('/check-twitter-quest-status', async function (req, res) {
 
   try {
     let user_data = await getUserTwitterData(String(tusername));
+    console.log(JSON.stringify(user_data));
     let tweet_data = await getUserLatestTweetData(String(tuserid));
     let followers_count = user_data.data[0].public_metrics.followers_count;
+    let tweet_count = user_data.data[0].public_metrics.tweet_count;
+    let like_count = user_data.data[0].public_metrics.like_count;
+    let created_at = user_data.data[0].created_at;
     // Handle Tweet Checks
-    if (followers_count >= 10 && String(tweet_data).includes("#BOOMDAO")) {
+    if (tweet_count >= 10 && like_count >= 10 && String(tweet_data).includes("#BOOMDAO")) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'key': process.env.KEY,
