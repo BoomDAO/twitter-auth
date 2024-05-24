@@ -168,6 +168,21 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         res.status(401).send({ msg: 'Your tweet has been verified but some error occured in server, report this incident to dev team in discord' });
         res.status(401).end();
       }
+    } else if (String(tweet_data).includes("#BOOMDAO")) {
+      const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
+        headers: {
+          'key': process.env.KEY,
+          'aid': "remove_entity_" + actionId,
+          'uid': principal,
+        }
+      })
+      if (response.status == 200) {
+        res.status(202).send({ msg: 'Your twitter account does not meet the minimum requirements to complete this Quest, contact dev team for support.' });
+        res.status(202).end();
+      } else {
+        res.status(402).send({ msg: 'Your twitter does not meet the minimum requirements and we could not process this report back as some error occured in server, report this incident to dev team in discord' });
+        res.status(402).end();
+      }
     } else {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
