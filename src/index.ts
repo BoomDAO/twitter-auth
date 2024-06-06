@@ -106,9 +106,10 @@ app.get(
     const userData = JSON.stringify(req.user, undefined, 2);
     const data = JSON.parse(userData);
     let uid = req.query.userId;
+    console.log(uid);
     const response = await axios.post(process.env.UPDATE_URL ? process.env.UPDATE_URL : "", {}, {
       headers: {
-        'key': process.env.KEY,
+        'authorization': process.env.KEY,
         'tid': data.id,
         'uid': String(uid),
         'tusername': String(data.username)
@@ -120,7 +121,7 @@ app.get(
         <p style="font-family: monospace; text-align: center; margin-top: 120px; font-size: 35px; font-weight: 900;">Your Twitter account linked to BOOM Gaming Guild successfully</p>
         <p style="font-size: 20px;font-family: monospace;">Please Click on button below to redirect and complete Quest.</p>
         <button style="width: 200px; height: 50px; font-weight: bold; text-align: center; border-radius: 5px; background-color:lightblue;">
-        <a href="https://n7z64-2yaaa-aaaam-abnsa-cai.icp0.io/" style="text-decoration: none; font-size: 15px; color: black; font-weight: bold; text-align: center; height: auto; padding: 3px 0;">
+        <a href="https://awcae-maaaa-aaaam-abmyq-cai.icp0.io/" style="text-decoration: none; font-size: 15px; color: black; font-weight: bold; text-align: center; height: auto; padding: 3px 0;">
             BOOM GAMING GUILD
             </a>
         </button>
