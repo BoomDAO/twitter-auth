@@ -236,7 +236,7 @@ app.post('/set-user-discord-details', async function (req, res) {
   try {
     const response = await axios.post(process.env.DISCORD_UPDATE_URL ? process.env.DISCORD_UPDATE_URL : "", {}, {
       headers: {
-        'key': process.env.KEY,
+        'authorization': process.env.KEY,
         'uid': principal,
         'tusername': name
       }
