@@ -116,8 +116,8 @@ app.get(
       }
     })
     if (response.status == 200) {
-    res.end(
-      `<div style="text-align: center;">
+      res.end(
+        `<div style="text-align: center;">
         <p style="font-family: monospace; text-align: center; margin-top: 120px; font-size: 35px; font-weight: 900;">Your Twitter account linked to BOOM Gaming Guild successfully</p>
         <p style="font-size: 20px;font-family: monospace;">Please Click on button below to redirect and complete Quest.</p>
         <button style="width: 200px; height: 50px; font-weight: bold; text-align: center; border-radius: 5px; background-color:lightblue;">
@@ -126,7 +126,7 @@ app.get(
             </a>
         </button>
         </div>`
-    );
+      );
     } else {
       res.end(
         `<h1>${response.data}</h1>`
@@ -249,58 +249,95 @@ app.post('/set-user-discord-details', async function (req, res) {
 })
 
 // Discord events listener
-const token = process.env.BOT_TOKEN || "";
-const permission: PermissionResolvable = "ManageRoles";
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
-const rest = new REST({ version: '9' }).setToken(token);
-client.once('ready', () => {
-  console.log(`Logged : ${client.user?.tag}!`);
-});
-client.on('messageCreate', async message => {
-  if (message.content.includes('BOOM DAO') && message.content.length >= 10) {
-    // if (!message.member?.permissions.has(permission)) {
-    //     return message.reply('no permission to manage roles.');
-    // }
-    let sender_name = message.author.username;
-    if (message.author.bot) {
-      return message.reply('bot accounts not allowed to post here');
-    }
-    const url = process.env.UID_DISCORD_FETCH_URL || "";
-    const res = await axios.post(url, {}, {
-      headers: {
-        'key': process.env.KEY,
-        'tusername': String(sender_name)
-      }
-    })
-    let sender_uid = res.data;
-    if (sender_uid == "") {
-      return message.reply(`Hey ${sender_name}! You can authenticate your discord account on BOOM Gaming Guilds now and complete Quests to win rewards!`);
-    }
-    const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
-      headers: {
-        'key': process.env.KEY,
-        'aid': "grant_discord_post",
-        'uid': sender_uid,
-      }
-    })
-    if (response.status == 200) {
-      message.reply(`Hey ${sender_name}! Thank you for your kind words. We welcome you to BOOM Gaming Guild and appreciate all the feedbacks!`);
-    }
-
-    // To grant any role to the user after he made the post
-    // try {
-    //     await rest.put(
-    //         Routes.guildMemberRole(message.guild ? message.guild.id : '', userId, roleId),
-    //         { headers: { Authorization: `Bot ${client.token}` } }
-    //     );
-    //     message.reply(`Assigned role <@&${roleId}> to <@${userId}>.`);
-    // } catch (error) {
-    //     console.error(`Failed : ${error}`);
-    //     message.reply('Failed to assign role.');
-    // }
-  }
-});
-client.login(token);
+// const token = process.env.BOT_TOKEN || "";
+// const permission: PermissionResolvable = "ManageRoles";
+// const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+// const rest = new REST({ version: '9' }).setToken(token);
+// client.once('ready', () => {
+//   console.log(`Logged : ${client.user?.tag}!`);
+// });
+// client.on('messageCreate', async message => {
+//   if (message.content.includes('BOOM DAO') && message.content.length >= 10) {
+//     let sender_name = message.author.username;
+//     if (message.author.bot) {
+//       return message.reply('bot accounts not allowed to post here');
+//     }
+//     const url = process.env.UID_DISCORD_FETCH_URL || "";
+//     const res = await axios.post(url, {}, {
+//       headers: {
+//         'key': process.env.KEY,
+//         'tusername': String(sender_name)
+//       }
+//     })
+//     let sender_uid = res.data;
+//     if (sender_uid == "") {
+//       return message.reply(`Hey ${sender_name}! You can authenticate your discord account on BOOM Gaming Guilds now and complete Quests to win rewards!`);
+//     }
+//     const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
+//       headers: {
+//         'key': process.env.KEY,
+//         'aid': "grant_discord_post",
+//         'uid': sender_uid,
+//       }
+//     })
+//     if (response.status == 200) {
+//       message.reply(`Hey ${sender_name}! Thank you for your kind words. We welcome you to BOOM Gaming Guild and appreciate all the feedbacks!`);
+//     }
+//   } else if (message.content.includes('/Grant #')) {
+//     if (!message.member?.permissions.has(permission)) {
+//       return message.reply('no permission to manage roles.');
+//     }
+//     let guildId = process.env.GUILD_ID || "";
+//     let sender_name = message.author.username;
+//     let sender_did = message.author.id;
+//     if (message.author.bot) {
+//       return message.reply('bot accounts not allowed to post here');
+//     }
+//     const url = process.env.UID_DISCORD_FETCH_URL || "";
+//     const res = await axios.post(url, {}, {
+//       headers: {
+//         'key': process.env.KEY,
+//         'tusername': String(sender_name)
+//       }
+//     })
+//     let sender_uid = res.data;
+//     const guild = await client.guilds.fetch(guildId);
+//     const roles = await guild.roles.fetch();
+//     const role_to_be_granted = message.content.split("#")[1];
+//     const roleId = guild.roles.cache.find(r => r.name === role_to_be_granted)?.id;
+    
+//     if (sender_uid == "") {
+//       return message.reply(`Hey ${sender_name}! You can authenticate your discord account on BOOM Gaming Guilds now and complete Quests to win rewards!`);
+//     }
+//     try {
+//       if(roleId) {
+//         const res = await axios.post(process.env.FETCH_ENTITY_FROM_UID_URL || "", {}, {
+//           headers: {
+//             'key': process.env.KEY,
+//             'uid': String(sender_uid),
+//             'eid': "xp"
+//           }
+//         });
+//         let xp_amt = res.data.xp.split(".")[0];
+//         if(Number(xp_amt) >= 10000) {
+//           await rest.put(
+//             Routes.guildMemberRole(message.guild ? message.guild.id : '', sender_did, roleId),
+//             { headers: { Authorization: `Bot ${client.token}` } }
+//           );
+//           message.reply(`Assigned role <@&${roleId}> to <@${sender_name}>.`);
+//         } else {
+//           message.reply(`Hey <@${sender_name}>, looks like you have not reached to 10,000 Guild XP yet, Play more BGG Games.`);
+//         }
+//       } else {
+//         throw ("This Role does not exist.");
+//       }
+//     } catch (error) {
+//       console.error(`Failed : ${error}`);
+//       message.reply('Failed to assign role.');
+//     }
+//   }
+// });
+// client.login(token);
 
 app.use(express.static('/dist'));
 app.listen(port, () => { console.log("listening on " + { port }) });
