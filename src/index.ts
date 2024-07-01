@@ -165,7 +165,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         }
       })
       if (response.status == 200) {
-        res.status(200).send({ msg: 'Your twitter post has been verified and quest rewards have been processed.' })
+        res.status(200).send({ msg: 'Your twitter post has been verified and quest rewards have been processed' })
         res.status(200).end();
       } else {
         res.status(401).send({ msg: 'Your tweet has been verified but some error occured in server, report this incident to dev team in discord' });
