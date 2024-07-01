@@ -2,7 +2,6 @@
 .azle
 node_modules
 .env
-package-lock.json
 test
 env.d.ts
 dist
