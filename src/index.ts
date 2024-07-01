@@ -147,16 +147,16 @@ app.post('/check-twitter-quest-status', async function (req, res) {
 
   try {
     let user_data = await getUserTwitterData(String(tusername));
-    console.log(JSON.stringify(user_data));
     let tweet_data = await getUserLatestTweetData(String(tuserid));
     let followers_count = user_data.data[0].public_metrics.followers_count;
     let tweet_count = user_data.data[0].public_metrics.tweet_count;
     let like_count = user_data.data[0].public_metrics.like_count;
-    var created_at = user_data.data[0].created_at;
-    created_at = created_at.subtring(0, 4);
+    var created_at = String(user_data.data[0].created_at);
+    created_at = created_at.substring(0, 4);
 
     // Handle Tweet Checks
-    if (followers_count >= 100 && Number(created_at) <= 2023 && String(tweet_data).includes("#BOOMGUILD") && String(tweet_data).includes("BOOM Gaming Guild") && String(tweet_data).includes("guilds.boomdao.xyz")) {
+    if (followers_count >= 100 && Number(created_at) <= 2023 && String(tweet_data).includes("#BOOMGUILD")) {
+      console.log("came here");
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'authorization': process.env.KEY,
@@ -171,7 +171,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         res.status(401).send({ msg: 'Your tweet has been verified but some error occured in server, report this incident to dev team in discord' });
         res.status(401).end();
       }
-    } else if (String(tweet_data).includes("#BOOMDAO")) {
+    } else if (String(tweet_data).includes("#BOOMGUILD")) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'authorization': process.env.KEY,
@@ -203,7 +203,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
       }
     }
   } catch (e) {
-    res.send({ msg: e });
+    res.send({ msg: e.response.data });
     res.status(404).end();
   }
 })
