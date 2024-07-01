@@ -159,7 +159,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
     if (followers_count >= 100 && Number(created_at) <= 2023 && String(tweet_data).includes("#BOOMGUILD") && String(tweet_data).includes("BOOM Gaming Guild") && String(tweet_data).includes("guilds.boomdao.xyz")) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
-          'key': process.env.KEY,
+          'authorization': process.env.KEY,
           'aid': actionId,
           'uid': principal,
         }
@@ -174,7 +174,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
     } else if (String(tweet_data).includes("#BOOMDAO")) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
-          'key': process.env.KEY,
+          'authorization': process.env.KEY,
           'aid': "remove_entity_" + actionId,
           'uid': principal,
         }
@@ -189,7 +189,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
     } else {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
-          'key': process.env.KEY,
+          'authorization': process.env.KEY,
           'aid': "remove_entity_" + actionId,
           'uid': principal,
         }
