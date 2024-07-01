@@ -203,7 +203,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
       }
     }
   } catch (e) {
-    res.send({ msg: e.response.data });
+    res.send({ msg: e });
     res.status(404).end();
   }
 })
