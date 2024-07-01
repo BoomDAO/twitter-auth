@@ -152,9 +152,11 @@ app.post('/check-twitter-quest-status', async function (req, res) {
     let followers_count = user_data.data[0].public_metrics.followers_count;
     let tweet_count = user_data.data[0].public_metrics.tweet_count;
     let like_count = user_data.data[0].public_metrics.like_count;
-    let created_at = user_data.data[0].created_at;
+    var created_at = user_data.data[0].created_at;
+    created_at = created_at.subtring(0, 4);
+
     // Handle Tweet Checks
-    if (tweet_count >= 10 && like_count >= 10 && String(tweet_data).includes("#BOOMDAO")) {
+    if (followers_count >= 100 && Number(created_at) <= 2023 && String(tweet_data).includes("#BOOMGUILD") && String(tweet_data).includes("BOOM Gaming Guild") && String(tweet_data).includes("guilds.boomdao.xyz")) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'key': process.env.KEY,
