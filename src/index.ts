@@ -217,7 +217,7 @@ app.post('/grant-twitter-quest-entity', async function (req, res) {
   try {
     const response = await axios.post(process.env.GRANT_TWITTER_QUEST_ENTITY_URL ? process.env.GRANT_TWITTER_QUEST_ENTITY_URL : "", {}, {
       headers: {
-        'key': process.env.KEY,
+        'authorization': process.env.KEY,
         'uid': principal,
       }
     })
