@@ -155,8 +155,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
     created_at = created_at.substring(0, 4);
 
     // Handle Tweet Checks
-    if (followers_count >= 100 && Number(created_at) <= 2023 && String(tweet_data).includes("#BOOMGUILD")) {
-      console.log("came here");
+    if (followers_count >= 50 && Number(created_at) <= 2023 && String(tweet_data).includes("#BOOMGUILD")) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'authorization': process.env.KEY,
