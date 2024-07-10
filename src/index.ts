@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 import { Strategy } from '@superfaceai/passport-twitter-oauth2';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import session from 'express-session';
 import passport from 'passport';
 import axios from 'axios';
@@ -19,6 +19,17 @@ const corsOptions = {
 }
 
 const port = process.env.PORT || 3000;
+const IPSTACK_API_KEY = process.env.IPSTACK_API_KEY || "";
+
+async function getGeoInfo(ip: string): Promise<any> {
+  try {
+    const response = await axios.get(`http://api.ipstack.com/${ip}?access_key=${IPSTACK_API_KEY}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching geo information:', error);
+    throw new Error('Error fetching geo information');
+  }
+}
 
 async function getUserTwitterData(username: string) {
   const token = process.env.BEARER_TOKEN;
@@ -74,6 +85,20 @@ app.use(passport.initialize());
 app.use(
   session({ secret: 'keyboard cat', resave: false, saveUninitialized: true })
 );
+
+app.get('/ip-geo-blocking', async (req, res) => {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  console.log(clientIp);
+  if (typeof clientIp === 'string') {
+    try {
+      const geoInfo = await getGeoInfo(clientIp);
+      console.log(geoInfo);
+      res.send(`Here is the IP : ${geoInfo.country_code}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+});
 
 app.get('/', async function (req, res) {
   passport.use(
@@ -306,7 +331,7 @@ app.post('/set-user-discord-details', async function (req, res) {
 //     const roles = await guild.roles.fetch();
 //     const role_to_be_granted = message.content.split("#")[1];
 //     const roleId = guild.roles.cache.find(r => r.name === role_to_be_granted)?.id;
-    
+
 //     if (sender_uid == "") {
 //       return message.reply(`Hey ${sender_name}! You can authenticate your discord account on BOOM Gaming Guilds now and complete Quests to win rewards!`);
 //     }
