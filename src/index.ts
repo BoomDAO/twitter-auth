@@ -87,15 +87,11 @@ app.use(
 );
 
 app.get('/get-geo-info', async (req, res) => {
-  let auth = req.headers['Authorization'];
-  if (auth != process.env.key) {
-    res.status(404).end();
-  }
   const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   if (typeof clientIp === 'string') {
     try {
       const geoInfo = await getGeoInfo(clientIp);
-      res.status(200).send(JSON.stringify(geoInfo));
+      res.status(200).send(geoInfo);
     } catch (error) {
       console.error(error);
     }
