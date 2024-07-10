@@ -95,7 +95,7 @@ app.get('/get-geo-info', async (req, res) => {
   if (typeof clientIp === 'string') {
     try {
       const geoInfo = await getGeoInfo(clientIp);
-      res.status(200).send(`${geoInfo}`);
+      res.status(200).send(JSON.stringify(geoInfo));
     } catch (error) {
       console.error(error);
     }
