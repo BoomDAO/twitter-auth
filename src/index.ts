@@ -86,14 +86,16 @@ app.use(
   session({ secret: 'keyboard cat', resave: false, saveUninitialized: true })
 );
 
-app.get('/ip-geo-blocking', async (req, res) => {
+app.get('/get-geo-info', async (req, res) => {
+  let auth = req.headers['Authorization'];
+  if (auth != process.env.key) {
+    res.status(404).end();
+  }
   const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  console.log(clientIp);
   if (typeof clientIp === 'string') {
     try {
       const geoInfo = await getGeoInfo(clientIp);
-      console.log(geoInfo);
-      res.send(`Here is the IP : ${geoInfo.country_code}`);
+      res.status(200).send(`${geoInfo}`);
     } catch (error) {
       console.error(error);
     }
