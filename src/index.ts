@@ -54,6 +54,28 @@ async function getUserTwitterData(username: string) {
   }
 }
 
+async function getRetweetData(postId: string) {
+  const token = process.env.BEARER_TOKEN;
+  const endpointURL = "https://api.twitter.com/2/tweets/" + postId + "/retweeted_by?"
+  const params = {
+    "user.fields": "created_at,username,id"
+  }
+  const res = await needle('get', endpointURL, params, {
+    headers: {
+      "User-Agent": "v2UserLookupJS",
+      "authorization": `Bearer ${token}`
+    }
+  })
+  if (res.body) {
+    // console.dir(res, {
+    //   depth: null
+    // });
+    return res.body;
+  } else {
+    throw new Error('Unsuccessful request')
+  }
+}
+
 const getUserLatestTweetData = async (userId: string) => {
   const url = `https://api.twitter.com/2/users/${userId}/tweets`;
   const token = process.env.BEARER_TOKEN;
@@ -163,22 +185,33 @@ app.post('/check-twitter-quest-status', async function (req, res) {
   if (auth != process.env.key) {
     res.status(404).end();
   }
-  let tusername = req.headers['tusername'];
+  let tusername = req.headers['tusername']; 
   let tuserid = req.headers['tuserid'];
   let principal = req.headers['principalid'];
   let actionId = req.headers['actionid'];
+  let postId = "1812853894604832866"; // Post Id which need to be retweeted
 
   try {
     let user_data = await getUserTwitterData(String(tusername));
-    let tweet_data = await getUserLatestTweetData(String(tuserid));
+    // let tweet_data = await getUserLatestTweetData(String(tuserid));
     let followers_count = user_data.data[0].public_metrics.followers_count;
     let tweet_count = user_data.data[0].public_metrics.tweet_count;
     let like_count = user_data.data[0].public_metrics.like_count;
     var created_at = String(user_data.data[0].created_at);
     created_at = created_at.substring(0, 4);
 
+    let retweet_data = await getRetweetData(postId);
+    let isRetweeted = false;
+    for(let i = 0 ; i < retweet_data.data.length; i += 1) {
+      let _data = retweet_data.data[i];
+      if(_data.username == tusername) {
+        isRetweeted = true;
+      }
+    }
+    res.status(200).send({msg: "done"});
+
     // Handle Tweet Checks
-    if (followers_count >= 50 && Number(created_at) <= 2023 && String(tweet_data).includes("#BOOMGUILD")) {
+    if (followers_count >= 50 && Number(created_at) <= 2023 && isRetweeted) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'authorization': process.env.KEY,
@@ -193,7 +226,7 @@ app.post('/check-twitter-quest-status', async function (req, res) {
         res.status(401).send({ msg: 'Your tweet has been verified but some error occured in server, report this incident to dev team in discord' });
         res.status(401).end();
       }
-    } else if (String(tweet_data).includes("#BOOMGUILD")) {
+    } else if (isRetweeted) {
       const response = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
         headers: {
           'authorization': process.env.KEY,
