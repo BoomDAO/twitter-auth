@@ -219,6 +219,13 @@ app.post('/check-twitter-quest-status', async function (req, res) {
           'uid': principal,
         }
       })
+      const _ = await axios.post(process.env.PROCESS_ACTION_AS_ADMIN_URL ? process.env.PROCESS_ACTION_AS_ADMIN_URL : "", {}, {
+        headers: {
+          'authorization': process.env.KEY,
+          'aid': "remove_entity_" + actionId,
+          'uid': principal,
+        }
+      })
       if (response.status == 200) {
         res.status(200).send({ msg: 'Your twitter post has been verified and quest rewards have been processed' })
         res.status(200).end();
